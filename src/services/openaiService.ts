@@ -8,7 +8,7 @@ const getOpenAIKey = (): string | null => {
 // Real implementation with OpenAI API calls using fetch
 class OpenAIService {
   async generateMealPlan(
-    request: MealPlanRequest, 
+    _request: MealPlanRequest, 
     onProgress?: (progress: AIGenerationProgress) => void
   ): Promise<MealGenerationResponse> {
     const apiKey = getOpenAIKey();
