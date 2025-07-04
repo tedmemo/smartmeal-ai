@@ -218,6 +218,25 @@ MIT License - see LICENSE file for details.
 - **Tailwind CSS**: For the beautiful design system
 - **Lucide**: For the comprehensive icon library
 
+## 🔑 Adding Your OpenAI API Key
+
+This app does **not** include any OpenAI API key in the codebase for security reasons. To use AI-powered features (meal planning, chat, etc.), you must add your own API key after deploying or cloning the app.
+
+### How to Add Your API Key
+
+1. **Deploy or run the app** (locally or on Vercel).
+2. **Click the Settings (gear) icon** in the top-right corner, or use the yellow banner at the top if prompted.
+3. **Paste your OpenAI API key** in the modal and save.
+4. Your key is stored **only in your browser** (localStorage) and is never sent to any server or included in the code.
+5. You can remove or update your key at any time from the same Settings modal.
+
+> **Tip:** You can get your OpenAI API key from [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### Why This is Secure
+- No API key is ever committed to the repo or sent to a server.
+- Each user controls their own key in their browser.
+- Safe for public forks, deployment, and open source use.
+
 ---
 
 **Built with ❤️ for the SmartMeal AI community**

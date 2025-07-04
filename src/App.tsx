@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import Header from './components/Header';
 import MealPlanForm from './components/MealPlanForm';
 import MealCard from './components/MealCard';
 import ShoppingList from './components/ShoppingList';
 import LoadingAnimation from './components/LoadingAnimation';
 import MealDetailModal, { ChatModal } from './components/MealDetailModal';
+import Settings from './components/Settings';
 import { Meal, MealPlanRequest, ShoppingListItem, AIGenerationProgress, MealGenerationResponse } from './types';
 import { Sparkles, Calendar, ListChecks, AlertCircle, RefreshCw, Wifi, WifiOff, Bot } from 'lucide-react';
 import openaiService from './services/openaiService';
@@ -27,6 +28,8 @@ function App() {
   const [lastRequest, setLastRequest] = useState<MealPlanRequest | null>(null);
   const [previousMeals, setPreviousMeals] = useState<Meal[]>([]);
   const [showComparison, setShowComparison] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showApiBanner, setShowApiBanner] = useState(() => !openaiService.isApiKeyConfigured());
 
   // Monitor network status
   useState(() => {
@@ -84,6 +87,8 @@ function App() {
 
     meals.forEach(meal => {
       meal.ingredients.forEach(ingredient => {
+        // Only add if ingredient.name is a non-empty string
+        if (!ingredient.name || typeof ingredient.name !== 'string') return;
         const category = getCategoryForIngredient(ingredient.name);
         items.push({
           id: (idCounter++).toString(),
@@ -101,6 +106,7 @@ function App() {
   };
 
   const getCategoryForIngredient = (ingredient: string): string => {
+    if (!ingredient || typeof ingredient !== 'string') return 'Other';
     const categories = {
       'Produce': ['bell peppers', 'cucumber', 'asparagus', 'lemon', 'banana', 'mixed berries', 'tomato', 'onion', 'garlic'],
       'Protein': ['salmon fillets', 'chickpeas', 'protein powder', 'chicken', 'beef', 'eggs', 'tofu'],
@@ -131,11 +137,12 @@ function App() {
       if (isOnline) {
         // Try AI generation first
         try {
-          response = await openaiService.generateMealPlan(request, (progress) => {
+          response = await openaiService.generateMealPlan(request, (progress: AIGenerationProgress) => {
             setAiProgress(progress);
           });
           
           console.log('✅ AI Response received:', response);
+          console.log('✅ Meals in response:', response.meals);
           
         } catch (aiError) {
           console.warn(`🔄 ChatGPT generation failed, using enhanced fallback:`, aiError);
@@ -208,6 +215,7 @@ function App() {
       
       // Always generate shopping list from the meals, regardless of AI response
       const generatedShoppingList = generateMockShoppingList(response.meals);
+      console.log('🛒 Generated shopping list:', generatedShoppingList);
       setShoppingList(generatedShoppingList);
 
       setActiveTab('meals');
@@ -267,7 +275,31 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <Header />
+      {/* API Key Banner */}
+      {showApiBanner && (
+        <div className="bg-yellow-100 border-b border-yellow-300 text-yellow-900 px-4 py-3 flex items-center justify-between z-50">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold">OpenAI API key not set.</span>
+            <span className="hidden sm:inline">Add your API key to enable AI-powered meal planning and customization.</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              className="bg-yellow-300 hover:bg-yellow-400 text-yellow-900 font-semibold px-3 py-1 rounded"
+              onClick={() => setIsSettingsOpen(true)}
+            >
+              Add API Key
+            </button>
+            <button
+              className="ml-2 text-yellow-700 hover:text-yellow-900 text-xl font-bold"
+              onClick={() => setShowApiBanner(false)}
+              title="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+      <Header onSettingsClick={() => setIsSettingsOpen(true)} />
       
       {/* Network Status Indicator */}
       <div className={`fixed top-20 right-4 z-40 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -391,7 +423,7 @@ function App() {
                     <div className="flex justify-center space-x-6 text-sm">
                       <div className="bg-white px-4 py-2 rounded-lg shadow">
                         <span className="font-semibold text-primary">Total Cost: </span>
-                        <span className="font-bold">${totalCost.toFixed(2)} AUD</span>
+                        <span className="font-bold">${(totalCost || currentMeals.reduce((sum, meal) => sum + (meal.estimatedCostPerServing || 0), 0)).toFixed(2)} AUD</span>
                       </div>
                       <div className="bg-white px-4 py-2 rounded-lg shadow">
                         <span className="font-semibold text-accent">Meals: </span>
@@ -401,7 +433,7 @@ function App() {
                   </div>
 
                   {/* Comparison Toggle */}
-                  {previousMeals.length > 0 && (
+                  {previousMeals && previousMeals.length > 0 && (
                     <div className="mb-6 text-center">
                       <button
                         onClick={() => setShowComparison(!showComparison)}
@@ -413,7 +445,7 @@ function App() {
                   )}
 
                   {/* Previous Meals Comparison */}
-                  {showComparison && previousMeals.length > 0 && (
+                  {showComparison && previousMeals && previousMeals.length > 0 && (
                     <div className="mb-8">
                       <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Previous Meal Plan</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -440,7 +472,7 @@ function App() {
                   )}
 
                   {/* Health Insights */}
-                  {healthInsights.length > 0 && (
+                  {healthInsights && healthInsights.length > 0 && (
                     <div className="mb-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
                       <h3 className="text-lg font-semibold text-gray-800 mb-3">💡 Health Insights</h3>
                       <ul className="space-y-2">
@@ -531,6 +563,15 @@ function App() {
           )}
         </div>
       </main>
+
+      {/* Settings Modal */}
+      <Settings 
+        isOpen={isSettingsOpen} 
+        onClose={() => {
+          setIsSettingsOpen(false);
+          setShowApiBanner(!openaiService.isApiKeyConfigured());
+        }} 
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Minus, Utensils, Clock, DollarSign, Users, Target, ChefHat } from 'lucide-react';
+import { Plus, Minus, Clock, DollarSign, Users, Target, ChefHat } from 'lucide-react';
 import { UserPreferences, MealPlanRequest } from '../types';
 
 interface MealPlanFormProps {

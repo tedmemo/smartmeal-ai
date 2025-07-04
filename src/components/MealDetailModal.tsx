@@ -1,4 +1,4 @@
-import { X, Clock, Users, ChefHat, DollarSign, Heart, Lightbulb, Star, Award, ShoppingCart } from 'lucide-react';
+import { X, Clock, Users, ChefHat, DollarSign, Heart, Lightbulb, Star, ShoppingCart } from 'lucide-react';
 import { Meal } from '../types';
 import React, { useState, useRef, useEffect } from 'react';
 import openaiService from '../services/openaiService';

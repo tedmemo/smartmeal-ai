@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { Check, ShoppingCart, Package } from 'lucide-react';
 import { ShoppingListItem } from '../types';
 import { Meal } from '../types';
@@ -10,7 +10,6 @@ interface ShoppingListProps {
 }
 
 const ShoppingList: React.FC<ShoppingListProps> = ({ items, onItemToggle, meals }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   // Group items by meal
   const itemsByMeal: Record<string, ShoppingListItem[]> = {};

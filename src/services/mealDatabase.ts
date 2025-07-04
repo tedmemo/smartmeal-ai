@@ -6,6 +6,7 @@ import { Meal } from '../types';
 export const sampleMeals: Meal[] = [
   {
     id: '1',
+    mealType: 'Lunch',
     name: 'Mediterranean Quinoa Bowl',
     cuisineType: 'Mediterranean',
     description: 'A nutritious bowl packed with quinoa, roasted vegetables, chickpeas, and a creamy tahini dressing. Perfect for a healthy lunch or light dinner.',
@@ -55,12 +56,16 @@ export const sampleMeals: Meal[] = [
       'Add a pinch of cumin to the tahini dressing for depth',
       'Meal prep friendly - stores well for 3-4 days'
     ],
-    category: 'Lunch',
     tags: ['healthy', 'vegetarian', 'high-protein', 'mediterranean', 'meal-prep'],
-    dietaryGoal: 'Family Nutrition'
+    dessert: {
+      name: 'Greek Yogurt with Honey',
+      description: 'Light and creamy Greek yogurt drizzled with local honey',
+      ingredients: ['Greek yogurt', 'honey', 'nuts']
+    }
   },
   {
     id: '2',
+    mealType: 'Dinner',
     name: 'Garlic Herb Salmon with Asparagus',
     cuisineType: 'Australian',
     description: 'Pan-seared salmon fillet seasoned with fresh herbs and garlic, served with roasted asparagus. A protein-rich, low-carb dinner option using local Australian salmon.',
@@ -111,12 +116,16 @@ export const sampleMeals: Meal[] = [
       'Check doneness - salmon should flake easily with a fork',
       'Choose thick asparagus spears for better texture'
     ],
-    category: 'Dinner',
     tags: ['seafood', 'low-carb', 'high-protein', 'gluten-free', 'australian'],
-    dietaryGoal: 'Muscle Building'
+    dessert: {
+      name: 'Lemon Sorbet',
+      description: 'Refreshing lemon sorbet with mint garnish',
+      ingredients: ['lemon sorbet', 'mint leaves', 'lemon zest']
+    }
   },
   {
     id: '3',
+    mealType: 'Breakfast',
     name: 'Aussie Berry Protein Smoothie',
     cuisineType: 'Australian',
     description: 'A refreshing and energizing smoothie with native Australian berries, protein powder, and locally-sourced ingredients. Perfect for breakfast or post-workout recovery.',
@@ -166,12 +175,16 @@ export const sampleMeals: Meal[] = [
       'Add ingredients gradually for better blending',
       'Pre-soak chia seeds for easier digestion'
     ],
-    category: 'Breakfast',
     tags: ['smoothie', 'protein', 'quick', 'dairy-free', 'australian', 'post-workout'],
-    dietaryGoal: 'Muscle Building'
+    dessert: {
+      name: 'Fresh Fruit Salad',
+      description: 'Seasonal Australian fruits with honey drizzle',
+      ingredients: ['mixed berries', 'banana', 'honey', 'mint']
+    }
   },
   {
     id: '4',
+    mealType: 'Dinner',
     name: 'Vietnamese Pho-Inspired Chicken Soup',
     cuisineType: 'Vietnamese',
     description: 'A simplified, family-friendly version of traditional Vietnamese pho with aromatic herbs, tender chicken, and rice noodles. Adapted for Australian kitchens.',
@@ -224,12 +237,16 @@ export const sampleMeals: Meal[] = [
       'Skim foam from broth for clearer soup',
       'Serve garnishes on the side for customization'
     ],
-    category: 'Dinner',
     tags: ['vietnamese', 'soup', 'comfort-food', 'gluten-free', 'family-friendly'],
-    dietaryGoal: 'Family Nutrition'
+    dessert: {
+      name: 'Vietnamese Coffee',
+      description: 'Strong Vietnamese coffee with condensed milk',
+      ingredients: ['vietnamese coffee', 'condensed milk', 'ice']
+    }
   },
   {
     id: '5',
+    mealType: 'Dinner',
     name: 'Mexican-Style Black Bean Quesadillas',
     cuisineType: 'Mexican',
     description: 'Crispy whole wheat tortillas filled with seasoned black beans, cheese, and vegetables. A budget-friendly, protein-rich meal that\'s perfect for busy weeknights.',
@@ -283,9 +300,12 @@ export const sampleMeals: Meal[] = [
       'Use a pizza cutter to slice into triangles',
       'Make extra bean mixture for meal prep'
     ],
-    category: 'Dinner',
     tags: ['mexican', 'vegetarian', 'budget-friendly', 'family-friendly', 'quick'],
-    dietaryGoal: 'Budget-Friendly'
+    dessert: {
+      name: 'Mexican Flan',
+      description: 'Creamy caramel flan with vanilla',
+      ingredients: ['eggs', 'milk', 'sugar', 'vanilla']
+    }
   }
 ];
 
@@ -317,11 +337,6 @@ class MealDatabase {
     return this.meals.filter(meal => meal.cuisineType === cuisineType);
   }
 
-  // Filter meals by category
-  getMealsByCategory(category: string): Meal[] {
-    return this.meals.filter(meal => meal.category === category);
-  }
-
   // Filter meals by difficulty
   getMealsByDifficulty(difficulty: string): Meal[] {
     return this.meals.filter(meal => meal.difficulty === difficulty);
@@ -343,10 +358,7 @@ class MealDatabase {
     return shuffled.slice(0, Math.min(count, this.meals.length));
   }
 
-  // Get meals by dietary goal
-  getMealsByDietaryGoal(goal: string): Meal[] {
-    return this.meals.filter(meal => meal.dietaryGoal === goal);
-  }
+
 
   // Add new meal (for future functionality)
   addMeal(meal: Meal): void {

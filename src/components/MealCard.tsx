@@ -1,4 +1,4 @@
-import { Clock, Users, ChefHat, DollarSign, Heart, Lightbulb, Star, Award } from 'lucide-react';
+import { Clock, Users, ChefHat, DollarSign, Heart, Lightbulb, Star } from 'lucide-react';
 import { Meal } from '../types';
 
 interface MealCardProps {
