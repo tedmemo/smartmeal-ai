@@ -20,18 +20,6 @@ const Header: React.FC = () => {
             </div>
           </div>
           
-          <nav className="hidden md:flex items-center space-x-6">
-            <a href="#features" className="text-gray-700 hover:text-primary transition-colors">
-              Features
-            </a>
-            <a href="#about" className="text-gray-700 hover:text-primary transition-colors">
-              About
-            </a>
-            <button className="btn-primary text-sm">
-              Get Started
-            </button>
-          </nav>
-          
           <div className="md:hidden">
             <button className="btn-primary text-sm px-4 py-2">
               Start

@@ -1,28 +1,22 @@
 import { useState } from 'react';
 import { Check, ShoppingCart, Package } from 'lucide-react';
 import { ShoppingListItem } from '../types';
+import { Meal } from '../types';
 
 interface ShoppingListProps {
   items: ShoppingListItem[];
   onItemToggle: (itemId: string) => void;
+  meals: Meal[];
 }
 
-const ShoppingList: React.FC<ShoppingListProps> = ({ items, onItemToggle }) => {
+const ShoppingList: React.FC<ShoppingListProps> = ({ items, onItemToggle, meals }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  // Group items by category
-  const itemsByCategory = items.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, ShoppingListItem[]>);
-
-  const categories = ['All', ...Object.keys(itemsByCategory)];
-  const filteredItems = selectedCategory === 'All' 
-    ? items 
-    : itemsByCategory[selectedCategory] || [];
+  // Group items by meal
+  const itemsByMeal: Record<string, ShoppingListItem[]> = {};
+  meals.forEach(meal => {
+    itemsByMeal[meal.id] = items.filter(item => item.mealIds.includes(meal.id));
+  });
 
   const completedCount = items.filter(item => item.checked).length;
   const totalCount = items.length;
@@ -69,69 +63,34 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ items, onItemToggle }) => {
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {categories.map(category => (
-          <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            className={`px-3 py-1 rounded-full text-sm transition-colors ${
-              selectedCategory === category
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            {category}
-            {category !== 'All' && (
-              <span className="ml-1 text-xs opacity-75">
-                ({itemsByCategory[category]?.length || 0})
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Shopping List Items */}
-      <div className="space-y-2">
-        {selectedCategory === 'All' ? (
-          // Show items grouped by category
-          Object.entries(itemsByCategory).map(([category, categoryItems]) => (
-            <div key={category} className="mb-4">
-              <div className="flex items-center mb-2">
-                <Package className="h-4 w-4 text-gray-500 mr-2" />
-                <h3 className="font-medium text-gray-900">{category}</h3>
-                <span className="ml-2 text-xs text-gray-500">
-                  ({categoryItems.length} items)
-                </span>
-              </div>
-              <div className="ml-6 space-y-1">
-                {categoryItems.map(item => (
+      {/* Shopping List Items Grouped by Meal */}
+      <div className="space-y-6">
+        {meals.map(meal => (
+          <div key={meal.id} className="mb-4">
+            <div className="flex items-center mb-2">
+              <Package className="h-4 w-4 text-gray-500 mr-2" />
+              <h3 className="font-medium text-gray-900">{meal.mealType}: {meal.name}</h3>
+            </div>
+            <div className="ml-6 space-y-1">
+              {itemsByMeal[meal.id] && itemsByMeal[meal.id].length > 0 ? (
+                itemsByMeal[meal.id].map(item => (
                   <ShoppingListItemComponent
                     key={item.id}
                     item={item}
                     onToggle={() => onItemToggle(item.id)}
                   />
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className="text-gray-400 text-sm">No ingredients for this meal.</div>
+              )}
             </div>
-          ))
-        ) : (
-          // Show filtered items
-          <div className="space-y-1">
-            {filteredItems.map(item => (
-              <ShoppingListItemComponent
-                key={item.id}
-                item={item}
-                onToggle={() => onItemToggle(item.id)}
-              />
-            ))}
           </div>
-        )}
+        ))}
       </div>
 
-      {filteredItems.length === 0 && selectedCategory !== 'All' && (
+      {totalCount === 0 && (
         <div className="text-center py-8 text-gray-500">
-          No items in the {selectedCategory} category.
+          No items in the shopping list.
         </div>
       )}
     </div>
@@ -147,6 +106,9 @@ const ShoppingListItemComponent: React.FC<ShoppingListItemComponentProps> = ({
   item, 
   onToggle 
 }) => {
+  // Build Coles and Woolworths search URLs
+  const colesUrl = `https://www.coles.com.au/search/products?q=${encodeURIComponent(item.name)}`;
+  const woolworthsUrl = `https://www.woolworths.com.au/shop/search/products?searchTerm=${encodeURIComponent(item.name)}`;
   return (
     <div
       className={`flex items-center p-2 rounded-lg border cursor-pointer transition-all ${
@@ -164,18 +126,21 @@ const ShoppingListItemComponent: React.FC<ShoppingListItemComponentProps> = ({
         }`} />
       </div>
       
-      <div className="flex-1">
+      <div className="flex-1 flex items-center gap-2">
         <div className={`font-medium ${
           item.checked ? 'line-through' : ''
         }`}>
           {item.name}
         </div>
-        {item.quantity && (
-          <div className="text-sm text-gray-500">
-            {item.quantity}
-          </div>
-        )}
+        {/* Coles and Woolworths links */}
+        <a href={colesUrl} target="_blank" rel="noopener noreferrer" title="Search on Coles" className="text-red-600 hover:underline text-xs">Coles</a>
+        <a href={woolworthsUrl} target="_blank" rel="noopener noreferrer" title="Search on Woolworths" className="text-green-700 hover:underline text-xs">Woolworths</a>
       </div>
+      {item.quantity && (
+        <div className="text-sm text-gray-500 ml-2">
+          {item.quantity}
+        </div>
+      )}
     </div>
   );
 };
