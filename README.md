@@ -1,7 +1,5 @@
 # SmartMeal AI - Intelligent Meal Planning App
 
-<!-- TEST CHANGE: This is a temporary test comment to verify backup functionality -->
-
 A modern React TypeScript application that uses Google Gemini AI to generate personalized meal plans with Australian context, pricing, and nutritional information.
 
 ## 🧠 AI-Powered Features
