@@ -7,15 +7,16 @@ import LoadingAnimation from './components/LoadingAnimation';
 import MealDetailModal, { ChatModal } from './components/MealDetailModal';
 import Settings from './components/Settings';
 import { Meal, MealPlanRequest, ShoppingListItem, AIGenerationProgress, MealGenerationResponse } from './types';
-import { Sparkles, Calendar, ListChecks, AlertCircle, RefreshCw, Wifi, WifiOff, Bot } from 'lucide-react';
+import { Sparkles, Calendar, ListChecks, AlertCircle, RefreshCw, Wifi, WifiOff, Bot, ChefHat } from 'lucide-react';
 import openaiService from './services/openaiService';
 import mealDatabase from './services/mealDatabase';
+import AIChef from './components/AIChef';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentMeals, setCurrentMeals] = useState<Meal[]>([]);
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>([]);
-  const [activeTab, setActiveTab] = useState<'plan' | 'meals' | 'shopping'>('plan');
+  const [activeTab, setActiveTab] = useState<'plan' | 'meals' | 'shopping' | 'ai-chef'>('plan');
   const [error, setError] = useState<string | null>(null);
   const [aiProgress, setAiProgress] = useState<AIGenerationProgress | null>(null);
   const [mealPlanSummary, setMealPlanSummary] = useState<string>('');
@@ -299,7 +300,11 @@ function App() {
           </div>
         </div>
       )}
-      <Header onSettingsClick={() => setIsSettingsOpen(true)} />
+      <Header 
+        onSettingsClick={() => setIsSettingsOpen(true)} 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
       
       {/* Network Status Indicator */}
       <div className={`fixed top-20 right-4 z-40 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -558,6 +563,18 @@ function App() {
                 items={shoppingList}
                 onItemToggle={handleShoppingItemToggle}
                 meals={currentMeals}
+              />
+            </div>
+          )}
+
+          {activeTab === 'ai-chef' && (
+            <div className="max-w-4xl mx-auto">
+              <AIChef 
+                onMealGenerated={(meal, newShoppingList) => {
+                  setCurrentMeals([meal]);
+                  setShoppingList(prev => [...prev, ...newShoppingList]);
+                  setActiveTab('meals');
+                }}
               />
             </div>
           )}
