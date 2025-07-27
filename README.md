@@ -1,5 +1,7 @@
 # SmartMeal AI - Intelligent Meal Planning App
 
+![image](https://github.com/user-attachments/assets/76f13a69-093b-46ac-89e4-f68264a7c933)
+
 A modern React TypeScript application that uses OpenAI GPT-4o-nano to generate personalized meal plans with Australian context, pricing, and nutritional information.
 
 ## 🧠 AI-Powered Features
